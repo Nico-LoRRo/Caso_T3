@@ -14,7 +14,7 @@ WORKDIR /app
 
 # Copiar dependencias con versiones completamente congeladas y verificadas por hash
 COPY requirements.txt .
-RUN pip install --no-cache-dir --require-hashes -r requirements.txt
+RUN pip install --no-cache-dir --only-binary :all: --require-hashes -r requirements.txt
 
 # Copiar archivos del proyecto protegidos contra modificación por appuser
 COPY app/ ./app/
