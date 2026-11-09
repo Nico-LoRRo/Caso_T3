@@ -27,7 +27,6 @@ def create_app():
     app.register_blueprint(main_bp)
 
     @app.route('/health')
-    @csrf.exempt
     def health():
         return {'status': 'ok', 'message': 'LabTrack base activa'}
 

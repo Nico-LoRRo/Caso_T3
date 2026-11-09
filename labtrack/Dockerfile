@@ -12,14 +12,15 @@ RUN useradd -m -u 1000 appuser
 
 WORKDIR /app
 
-# Copiar dependencias e instalarlas
-COPY --chown=appuser:appuser requirements.txt .
+# Copiar dependencias con versiones completamente congeladas
+COPY requirements.txt .
 RUN pip install --no-cache-dir --only-binary :all: -r requirements.txt
 
-# Copiar selectivamente los archivos del proyecto (sin copia recursiva ciega)
-COPY --chown=appuser:appuser app/ ./app/
-COPY --chown=appuser:appuser run.py .
+# Copiar archivos del proyecto protegidos contra modificación por appuser
+COPY app/ ./app/
+COPY run.py .
 
+# Ejecutar proceso como appuser sin privilegios de superusuario
 USER appuser
 
 EXPOSE 5000
