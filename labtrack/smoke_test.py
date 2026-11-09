@@ -16,6 +16,7 @@ def run_smoke_test():
     init_db(force=True)
     app = create_app()
     app.config['TESTING'] = True
+    app.config['WTF_CSRF_ENABLED'] = False
     client = app.test_client()
 
     # -------------------------------------------------------------

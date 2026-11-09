@@ -65,6 +65,7 @@
                             <div class="btn-group" role="group">
                                 <!-- Botón Aprobar (HU-04) -->
                                 <form method="POST" action="{{ url_for('main.admin_aprobar', reserva_id=sol.id) }}" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <button type="submit" 
                                             class="btn btn-success btn-sm fw-semibold" 
                                             id="btn-aprobar-{{ sol.id }}">
@@ -89,6 +90,7 @@
                         <div class="modal-dialog">
                             <div class="modal-content border-0 shadow">
                                 <form method="POST" action="{{ url_for('main.admin_rechazar', reserva_id=sol.id) }}" id="form-rechazo-{{ sol.id }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <div class="modal-header bg-danger text-white">
                                         <h5 class="modal-title fw-bold">
                                             <i class="bi bi-shield-x me-2"></i>Justificar Rechazo de Reserva
@@ -144,6 +146,7 @@
         </h5>
         
         <div class="input-group input-group-sm" style="max-width: 300px;">
+            <label for="input-buscar-prestamo" class="visually-hidden">Buscar préstamos activos</label>
             <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
             <input type="text" class="form-control" id="input-buscar-prestamo" placeholder="Buscar por estudiante o equipo...">
         </div>
@@ -186,6 +189,7 @@
                         </td>
                         <td class="text-end pe-4">
                             <form method="POST" action="{{ url_for('main.admin_devolver', reserva_id=p.id) }}" class="d-inline" id="form-devolver-{{ p.id }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" 
                                         class="btn btn-primary btn-sm fw-semibold" 
                                         id="btn-devolver-{{ p.id }}">
@@ -202,9 +206,10 @@
                                     <h6 class="dropdown-header px-0 fw-bold">Simular Entrega para Pruebas</h6>
                                     <p class="small text-muted mb-2">Permite forzar entrega tardía para verificar la penalización automática en el acto.</p>
                                     <form method="POST" action="{{ url_for('main.admin_devolver', reserva_id=p.id) }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                         <div class="mb-2">
-                                            <label class="form-label small fw-semibold">Fecha y Hora de Entrega:</label>
-                                            <input type="text" name="fecha_hora_simulada" class="form-control form-control-sm" value="{{ p.fecha }} 23:59" placeholder="YYYY-MM-DD HH:MM">
+                                            <label for="fecha-simulada-{{ p.id }}" class="form-label small fw-semibold">Fecha y Hora de Entrega:</label>
+                                            <input type="text" id="fecha-simulada-{{ p.id }}" name="fecha_hora_simulada" class="form-control form-control-sm" value="{{ p.fecha }} 23:59" placeholder="YYYY-MM-DD HH:MM">
                                         </div>
                                         <button type="submit" class="btn btn-warning btn-sm w-100 fw-semibold">
                                             Devolver con Hora Simulada

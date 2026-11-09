@@ -16,6 +16,7 @@
                 </div>
 
                 <form method="POST" action="{{ url_for('main.login') }}" id="form-login">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label for="input-codigo" class="form-label fw-semibold small">Código de Usuario</label>
                         <div class="input-group">
@@ -26,8 +27,7 @@
                                    name="codigo" 
                                    value="{{ codigo or '' }}" 
                                    placeholder="Ej: N0001 o ADM01" 
-                                   required 
-                                   autofocus>
+                                   required>
                         </div>
                     </div>
 

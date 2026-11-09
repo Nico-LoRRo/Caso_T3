@@ -7,18 +7,21 @@ ENV PYTHONUNBUFFERED=1
 ENV PORT=5000
 ENV HOST=0.0.0.0
 
-# Directorio de trabajo en el contenedor
+# Crear usuario sin privilegios root
+RUN useradd -m -u 1000 appuser
+
 WORKDIR /app
 
 # Copiar dependencias e instalarlas
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY --chown=appuser:appuser requirements.txt .
+RUN pip install --no-cache-dir --only-binary :all: -r requirements.txt
 
-# Copiar el código de la aplicación
-COPY . .
+# Copiar selectivamente los archivos del proyecto (sin copia recursiva ciega)
+COPY --chown=appuser:appuser app/ ./app/
+COPY --chown=appuser:appuser run.py .
 
-# Exponer el puerto interno del contenedor
+USER appuser
+
 EXPOSE 5000
 
-# Comando para ejecutar LabTrack
 CMD ["python", "run.py"]

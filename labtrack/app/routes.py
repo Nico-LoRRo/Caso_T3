@@ -57,10 +57,7 @@ def login():
         exito, mensaje, usuario = autenticar_usuario(codigo, password)
 
         if not exito:
-            if "bloqueada" in mensaje.lower():
-                flash(mensaje, "danger")
-            else:
-                flash(mensaje, "danger")
+            flash(mensaje, "danger")
             return render_template('login.html', codigo=codigo)
 
         # Login correcto

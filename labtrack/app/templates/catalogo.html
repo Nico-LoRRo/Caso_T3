@@ -119,6 +119,7 @@
             <div class="modal-dialog">
                 <div class="modal-content border-0 shadow">
                     <form method="POST" action="{{ url_for('main.reservar') }}" id="form-reserva-{{ equipo.id }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <input type="hidden" name="equipo_id" value="{{ equipo.id }}">
                         
                         <div class="modal-header bg-primary text-white">
