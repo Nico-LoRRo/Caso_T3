@@ -1,0 +1,58 @@
+/* LabTrack - Estilos Personalizados */
+
+:root {
+    --primary-color: #0d6efd;
+    --primary-hover: #0b5ed7;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --bg-light: #f4f6f9;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: #333333;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Navbar */
+.navbar {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.navbar-brand {
+    letter-spacing: 0.5px;
+}
+
+/* Tarjetas */
+.card {
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.tarjeta-equipo:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* Botones */
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+/* Tablas */
+.table th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+}
+
+.table td {
+    vertical-align: middle;
+}

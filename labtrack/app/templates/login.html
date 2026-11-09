@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar Sesión - LabTrack{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="col-md-5 col-lg-4">
+        <div class="card shadow border-0 rounded-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex p-3 mb-2 shadow-sm">
+                        <i class="bi bi-person-lock fs-2"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">Acceso al Sistema</h4>
+                    <p class="text-muted small">Ingrese con su código institucional</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('main.login') }}" id="form-login">
+                    <div class="mb-3">
+                        <label for="input-codigo" class="form-label fw-semibold small">Código de Usuario</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="input-codigo" 
+                                   name="codigo" 
+                                   value="{{ codigo or '' }}" 
+                                   placeholder="Ej: N0001 o ADM01" 
+                                   required 
+                                   autofocus>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="input-password" class="form-label fw-semibold small">Contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
+                            <input type="password" 
+                                   class="form-control" 
+                                   id="input-password" 
+                                   name="password" 
+                                   placeholder="••••••••" 
+                                   required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold shadow-sm" id="btn-login">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión
+                    </button>
+                </form>
+
+                <hr class="my-4 text-muted">
+
+                <div class="bg-light p-3 rounded-3 small">
+                    <span class="fw-bold text-secondary d-block mb-1"><i class="bi bi-info-circle me-1"></i> Credenciales de prueba:</span>
+                    <ul class="list-unstyled mb-0 text-muted" style="font-size: 0.85rem;">
+                        <li><strong>Estudiante 1:</strong> <code>N0001</code> / <code>123456</code></li>
+                        <li><strong>Estudiante 2:</strong> <code>N0002</code> / <code>123456</code></li>
+                        <li><strong>Encargado:</strong> <code>ADM01</code> / <code>admin123</code></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

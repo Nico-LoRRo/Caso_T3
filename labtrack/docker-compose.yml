@@ -1,0 +1,10 @@
+services:
+  labtrack-web:
+    build: .
+    container_name: labtrack-web
+    restart: unless-stopped
+    ports:
+      - "10500:5000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=5000

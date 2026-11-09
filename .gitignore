@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Bases de datos SQLite locales (se generan automáticamente al iniciar)
+*.db
+*.sqlite3
+
+# IDEs y SO
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Pytest y reportes
+.pytest_cache/
+htmlcov/
+.coverage

@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel de Encargado de Laboratorio - LabTrack{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-7">
+        <h3 class="fw-bold text-dark mb-1">
+            <i class="bi bi-shield-check text-primary me-2"></i>Panel del Encargado de Laboratorio
+        </h3>
+        <p class="text-muted mb-0">Gestión de autorizaciones de préstamo y control físico de devoluciones</p>
+    </div>
+    <div class="col-md-5 text-md-end mt-3 mt-md-0">
+        <span class="badge bg-primary p-2 me-2">
+            <i class="bi bi-hourglass-split me-1"></i>Pendientes: <strong>{{ solicitudes|length }}</strong>
+        </span>
+        <span class="badge bg-success p-2">
+            <i class="bi bi-arrow-repeat me-1"></i>Préstamos Activos: <strong>{{ prestamos|length }}</strong>
+        </span>
+    </div>
+</div>
+
+<!-- ============================================================
+     SECCIÓN 1: Solicitudes de Reserva Pendientes (HU-04)
+     ============================================================ -->
+<div class="card shadow-sm border-0 mb-5" id="seccion-solicitudes">
+    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0 text-dark">
+            <i class="bi bi-clipboard-check text-warning me-2"></i>Solicitudes Pendientes por Aprobar / Rechazar (HU-04)
+        </h5>
+        <span class="badge bg-warning text-dark">{{ solicitudes|length }} pendientes</span>
+    </div>
+    <div class="card-body p-0">
+        {% if solicitudes %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="tabla-solicitudes">
+                <thead class="table-light">
+                    <tr>
+                        <th>Estudiante</th>
+                        <th>Equipo Solicitado</th>
+                        <th>Fecha y Horario</th>
+                        <th>Estado</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sol in solicitudes %}
+                    <tr id="fila-solicitud-{{ sol.id }}">
+                        <td>
+                            <strong class="d-block" id="sol-estudiante-nombre-{{ sol.id }}">{{ sol.estudiante_nombre }}</strong>
+                            <small class="text-muted" id="sol-estudiante-codigo-{{ sol.id }}">Código: {{ sol.estudiante_codigo }}</small>
+                        </td>
+                        <td>
+                            <span class="fw-semibold d-block" id="sol-equipo-nombre-{{ sol.id }}">{{ sol.equipo_nombre }}</span>
+                            <small class="badge bg-light text-secondary border">{{ sol.equipo_codigo }}</small>
+                        </td>
+                        <td>
+                            <i class="bi bi-calendar3 me-1 text-primary"></i>{{ sol.fecha }}<br>
+                            <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ sol.hora_inicio }} - {{ sol.hora_fin }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning text-dark">Pendiente</span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group" role="group">
+                                <!-- Botón Aprobar (HU-04) -->
+                                <form method="POST" action="{{ url_for('main.admin_aprobar', reserva_id=sol.id) }}" class="d-inline">
+                                    <button type="submit" 
+                                            class="btn btn-success btn-sm fw-semibold" 
+                                            id="btn-aprobar-{{ sol.id }}">
+                                        <i class="bi bi-check-lg me-1"></i>Aprobar
+                                    </button>
+                                </form>
+
+                                <!-- Botón Rechazar (Abre modal de motivo obligatorio - HU-04) -->
+                                <button type="button" 
+                                        class="btn btn-outline-danger btn-sm fw-semibold ms-1" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#modalRechazo{{ sol.id }}"
+                                        id="btn-abrir-rechazo-{{ sol.id }}">
+                                    <i class="bi bi-x-lg me-1"></i>Rechazar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Modal de Rechazo Obligatorio (HU-04) -->
+                    <div class="modal fade" id="modalRechazo{{ sol.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content border-0 shadow">
+                                <form method="POST" action="{{ url_for('main.admin_rechazar', reserva_id=sol.id) }}" id="form-rechazo-{{ sol.id }}">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title fw-bold">
+                                            <i class="bi bi-shield-x me-2"></i>Justificar Rechazo de Reserva
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body p-4">
+                                        <p class="small text-muted mb-3">
+                                            Rechazando solicitud de <strong>{{ sol.estudiante_nombre }}</strong> para el equipo <strong>{{ sol.equipo_nombre }}</strong>.
+                                        </p>
+                                        <div class="mb-3">
+                                            <label for="motivo-{{ sol.id }}" class="form-label fw-bold text-danger small">
+                                                Motivo de Rechazo <span class="text-danger">* (Obligatorio)</span>
+                                            </label>
+                                            <textarea class="form-control" 
+                                                      id="motivo-{{ sol.id }}" 
+                                                      name="motivo" 
+                                                      rows="3" 
+                                                      placeholder="Ej: Equipo en mantenimiento correctivo / Cruce de evento académico" 
+                                                      required></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer bg-light">
+                                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-danger btn-sm fw-semibold" id="btn-confirmar-rechazo-{{ sol.id }}">
+                                            Confirmar Rechazo
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-4 text-center text-muted">
+            <i class="bi bi-check2-circle text-success fs-3 d-block mb-2"></i>
+            <span>No hay solicitudes de préstamo pendientes por autorizar.</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ============================================================
+     SECCIÓN 2: Préstamos Activos y Devolución con Penalización (HU-05)
+     ============================================================ -->
+<div class="card shadow-sm border-0 mb-4" id="seccion-prestamos">
+    <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h5 class="fw-bold mb-0 text-dark">
+            <i class="bi bi-arrow-left-right text-success me-2"></i>Préstamos Activos y Devolución Física (HU-05)
+        </h5>
+        
+        <div class="input-group input-group-sm" style="max-width: 300px;">
+            <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" id="input-buscar-prestamo" placeholder="Buscar por estudiante o equipo...">
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+        {% if prestamos %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="tabla-prestamos">
+                <thead class="table-light">
+                    <tr>
+                        <th>Estudiante</th>
+                        <th>Estado Alumno</th>
+                        <th>Equipo Prestado</th>
+                        <th>Fecha y Hora Acordada</th>
+                        <th class="text-end pe-4">Acción de Devolución</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-prestamos">
+                    {% for p in prestamos %}
+                    <tr id="fila-prestamo-{{ p.id }}" class="fila-busqueda">
+                        <td>
+                            <strong class="d-block estudiante-dato">{{ p.estudiante_nombre }}</strong>
+                            <small class="text-muted">Código: {{ p.estudiante_codigo }}</small>
+                        </td>
+                        <td>
+                            {% if p.estudiante_estado == 'Penalizado' %}
+                                <span class="badge bg-danger">PENALIZADO</span>
+                            {% else %}
+                                <span class="badge bg-success">Activo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="fw-semibold d-block equipo-dato">{{ p.equipo_nombre }}</span>
+                            <small class="badge bg-light text-secondary border">{{ p.equipo_codigo }}</small>
+                        </td>
+                        <td>
+                            <i class="bi bi-calendar3 me-1 text-primary"></i>{{ p.fecha }}<br>
+                            <small class="text-muted"><i class="bi bi-clock me-1"></i>Hasta las {{ p.hora_fin }} hrs</small>
+                        </td>
+                        <td class="text-end pe-4">
+                            <form method="POST" action="{{ url_for('main.admin_devolver', reserva_id=p.id) }}" class="d-inline" id="form-devolver-{{ p.id }}">
+                                <button type="submit" 
+                                        class="btn btn-primary btn-sm fw-semibold" 
+                                        id="btn-devolver-{{ p.id }}">
+                                    <i class="bi bi-box-arrow-in-down me-1"></i>Marcar Devolución
+                                </button>
+                            </form>
+
+                            <!-- Desplegable para pruebas docentes de simulación horaria (HU-05) -->
+                            <div class="dropdown d-inline ms-1">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" title="Simulación para pruebas">
+                                    <i class="bi bi-stopwatch"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end p-3 shadow" style="min-width: 280px;">
+                                    <h6 class="dropdown-header px-0 fw-bold">Simular Entrega para Pruebas</h6>
+                                    <p class="small text-muted mb-2">Permite forzar entrega tardía para verificar la penalización automática en el acto.</p>
+                                    <form method="POST" action="{{ url_for('main.admin_devolver', reserva_id=p.id) }}">
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-semibold">Fecha y Hora de Entrega:</label>
+                                            <input type="text" name="fecha_hora_simulada" class="form-control form-control-sm" value="{{ p.fecha }} 23:59" placeholder="YYYY-MM-DD HH:MM">
+                                        </div>
+                                        <button type="submit" class="btn btn-warning btn-sm w-100 fw-semibold">
+                                            Devolver con Hora Simulada
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-4 text-center text-muted">
+            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+            <span>No hay préstamos activos en este momento. Todos los equipos prestados han sido devueltos.</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Buscador en tiempo real de préstamos activos (HU-05)
+    document.addEventListener("DOMContentLoaded", function() {
+        const inputBuscar = document.getElementById("input-buscar-prestamo");
+        if (inputBuscar) {
+            inputBuscar.addEventListener("input", function() {
+                const query = this.value.toLowerCase().trim();
+                const filas = document.querySelectorAll("#tbody-prestamos .fila-busqueda");
+                filas.forEach(fila => {
+                    const texto = fila.innerText.toLowerCase();
+                    fila.style.display = texto.includes(query) ? "" : "none";
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}
